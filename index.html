@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subtítulos Épicos</title>
+<style>
+body { margin:0; background:#000; color:#fff; font-family:Arial; text-align:center; padding:20px; }
+h1 { color:#FFD700; font-size:24px; }
+.btn { background:#ff4500; padding:15px 30px; border-radius:12px; font-size:18px; border:none; color:#fff; display:inline-block; margin:20px; cursor:pointer; }
+#video { width:100%; max-width:400px; border-radius:12px; margin-top:20px; }
+#subtitle-layer { position:relative; bottom:60px; font-size:28px; font-weight:bold; text-shadow:2px 2px 4px #000; }
+</style>
+</head>
+<body>
+<h1>⚔️ SUBTÍTULOS ÉPICOS ⚔️</h1>
+<input type="file" id="videoInput" accept="video/*" style="display:none">
+<label for="videoInput" class="btn">＋ SUBIR VIDEO</label>
+<video id="video" controls></video>
+<div id="subtitle-layer">Aquí aparecerán los subtítulos</div>
+<script>
+document.getElementById('videoInput').addEventListener('change', e => {
+  const file = e.target.files[0];
+  document.getElementById('video').src = URL.createObjectURL(file);
+});
+</script>
+</body>
+</html>
