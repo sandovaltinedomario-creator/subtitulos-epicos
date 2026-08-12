@@ -2,27 +2,73 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Subtítulos Épicos</title>
+<title>ESTUDIO SUBTÍTULOS ÉPICOS</title>
+<script src="https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2"></script>
 <style>
-body { margin:0; background:#000; color:#fff; font-family:Arial; text-align:center; padding:20px; }
-h1 { color:#FFD700; font-size:24px; }
-.btn { background:#ff4500; padding:15px 30px; border-radius:12px; font-size:18px; border:none; color:#fff; display:inline-block; margin:20px; cursor:pointer; }
-#video { width:100%; max-width:400px; border-radius:12px; margin-top:20px; }
-#subtitle-layer { position:relative; bottom:60px; font-size:28px; font-weight:bold; text-shadow:2px 2px 4px #000; }
+body{background:#000;color:#fff;font-family:Arial;text-align:center;padding:5px}
+h1{color:#FFD700;text-shadow:0 0 15px #FFD700;font-size:20px}
+button{background:#FF4500;color:#fff;border:none;padding:10px 20px;font-size:14px;border-radius:10px;cursor:pointer;margin:3px}
+button.descargar{background:#00FF00;color:#000;font-weight:bold}
+select,input{padding:6px;border-radius:6px;background:#222;color:#FFD700;border:1px solid #FFD700}
+.container{position:relative;display:inline-block}
+canvas{max-width:95%;border:3px solid #FFD700}
+#subsCanvas{position:absolute;top:0;left:0;pointer-events:auto;cursor:move}
+.panel{background:#111;padding:10px;margin:10px;border-radius:10px}
+.d1{font-family:Impact;color:#FFD700;text-shadow:3px 3px 0 #000}
+.d2{font-family:Arial Black;color:#FF0000;text-shadow:0 0 20px #FF0000;animation:temblar 0.3s infinite}
+@keyframes temblar{0%,100%{transform:translateX(0)}50%{transform:translateX(5px)}}
 </style>
 </head>
 <body>
-<h1>⚔️ SUBTÍTULOS ÉPICOS ⚔️</h1>
+<h1>⚔️ ESTUDIO SUBTÍTULOS ÉPICOS ⚔️</h1>
+<div class="panel">
 <input type="file" id="videoInput" accept="video/*" style="display:none">
-<label for="videoInput" class="btn">+ SUBIR VIDEO</label>
-<video id="video" controls></video>
-<div id="subtitle-layer">Aquí aparecerán los subtítulos</div>
+<button onclick="document.getElementById('videoInput').click()">+ SUBIR VIDEO</button>
+<button class="descargar" onclick="descargarVideo()">💾 DESCARGAR</button>
+<br><br>
+<label>DISEÑO: </label>
+<select id="diseno">
+  <option value="d1">1. DORADO IMPACT</option>
+  <option value="d2">2. SANGRE TEMBLOR</option>
+</select>
+</div>
+<div class="container">
+  <canvas id="canvas"></canvas>
+  <canvas id="subsCanvas"></canvas>
+</div>
+<video id="video" style="display:none"></video>
 <script>
-document.getElementById('videoInput').addEventListener('change', e => {
-  const file = e.target.files[0];
-  document.getElementById('video').src = URL.createObjectURL(file);
+const { pipeline } = transformers;
+let transcriber, outputData = [];
+async function init(){transcriber=await pipeline('automatic-speech-recognition','Xenova/whisper-small',{return_timestamps:true})}
+init();
+document.getElementById('videoInput').addEventListener('change',async e=>{
+  const file=e.target.files[0];
+  document.getElementById('video').src=URL.createObjectURL(file);
+  alert("Transcribiendo... 1 min");
+  outputData=await transcriber(file);
+  alert("Listo! Dale play");
+  reproducir();
 });
-</script>
-</body>
-</html>
+function reproducir(){
+  const video=document.getElementById('video');
+  const canvas=document.getElementById('canvas');
+  const subs=document.getElementById('subsCanvas');
+  const ctx=canvas.getContext('2d');
+  const ctxS=subs.getContext('2d');
+  video.onloadedmetadata=()=>{
+    canvas.width=video.videoWidth;
+    canvas.height=video.videoHeight;
+    subs.width=video.videoWidth;
+    subs.height=video.videoHeight;
+    video.play();
+  }
+  function draw(){
+    if(video.paused)return;
+    ctx.drawImage(video,0,0);
+    ctxS.clearRect(0,0,subs.width,subs.height);
+    const t=video.currentTime;
+    let texto="";
+    outputData.chunks.forEach(c=>{if(t>=c.timestamp[0]&&t<=c.timestamp[1])texto=c.text});
+    if(texto){
+      ctxS.font=`bold 48px Impact`;
