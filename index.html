@@ -1,39 +1,101 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>SUBTITULOS EPICOS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SUBTITULOS EPICOS IA SMART</title>
 <script src="https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2"></script>
 <style>
-body{background:#000;color:#fff;text-align:center}
-h1{color:#FFD700}
-button{background:#FF4500;color:#fff;padding:15px;border:none;border-radius:10px;font-size:16px}
+body{background:#000;color:#fff;text-align:center;font-family:Arial;margin:0;padding:10px}
+h1{color:#FFD700;text-shadow:0 0 15px #FFD700;font-size:22px}
+button{background:#FF4500;color:#fff;border:none;padding:15px 25px;font-size:16px;border-radius:10px;margin:5px;font-weight:bold}
 button.descargar{background:#00FF00;color:#000}
-canvas{border:3px solid #FFD700;max-width:95%}
+input{padding:10px;background:#222;color:#FFD700;border:1px solid #FFD700;border-radius:8px}
+.container{position:relative;display:inline-block;max-width:100%}
+canvas{max-width:100%;border:3px solid #FFD700;border-radius:10px}
+#subsCanvas{position:absolute;top:0;left:0;pointer-events:none}
 </style>
 </head>
 <body>
-<h1>SUBTITULOS EPICOS</h1>
+<h1>⚔️ SUBTITULOS EPICOS SMART ⚔️</h1>
 <input type="file" id="videoInput" accept="video/*">
-<button class="descargar" onclick="alert('Graba pantalla')">DESCARGAR</button>
-<br>
+<button class="descargar" onclick="alert('Graba pantalla para guardar')">DESCARGAR</button>
+<div class="container">
 <canvas id="canvas"></canvas>
-<canvas id="subsCanvas" style="position:absolute"></canvas>
+<canvas id="subsCanvas"></canvas>
+</div>
 <video id="video" style="display:none"></video>
+
 <script>
-document.getElementById('videoInput').onchange=e=>{
-document.getElementById('video').src=URL.createObjectURL(e.target.files[0]);
-document.getElementById('video').play();
-reproducir();
+const { pipeline } = transformers;
+let transcriber, datos = [];
+let esVertical = false;
+
+async function cargarIA(){
+transcriber = await pipeline('automatic-speech-recognition','Xenova/whisper-tiny',{return_timestamps:true});
 }
+cargarIA();
+
+document.getElementById('videoInput').onchange=async e=>{
+const file=e.target.files[0];
+if(!file)return;
+document.getElementById('video').src=URL.createObjectURL(file);
+alert("Transcribiendo con IA... espera 30 seg");
+const resultado = await transcriber(file);
+datos = resultado.chunks;
+alert("Listo! Dale play");
+reproducir();
+};
+
 function reproducir(){
 const v=document.getElementById('video');
 const c=document.getElementById('canvas');
 const s=document.getElementById('subsCanvas');
 const ctx=c.getContext('2d');
 const ctxs=s.getContext('2d');
-v.onloadedmetadata=()=>{c.width=v.videoWidth;c.height=v.videoHeight;s.width=v.videoWidth;s.height=v.videoHeight;}
-setInterval(()=>{ctx.drawImage(v,0,0);ctxs.clearRect(0,0,s.width,s.height);ctxs.font='bold 50px Impact';ctxs.fillStyle='#FFD700';ctxs.strokeStyle='#000';ctxs.lineWidth=5;ctxs.textAlign='center';ctxs.strokeText('HOLA BRO',s.width/2,s.height-50);ctxs.fillText('HOLA BRO',s.width/2,s.height-50);},100);
+
+v.onloadedmetadata=()=>{
+c.width=v.videoWidth;
+c.height=v.videoHeight;
+s.width=v.videoWidth;
+s.height=v.videoHeight;
+
+// DETECTAR SI ES VERTICAL O HORIZONTAL
+esVertical = v.videoHeight > v.videoWidth;
+if(esVertical){
+alert("Detectado: VIDEO VERTICAL. Subtítulos abajo");
+} else {
+alert("Detectado: VIDEO HORIZONTAL. Subtítulos abajo");
+}
+
+v.play();
+}
+
+function dibujar(){
+if(!v.paused){
+ctx.drawImage(v,0,0);
+ctxs.clearRect(0,0,s.width,s.height);
+const t=v.currentTime;
+let texto="";
+datos.forEach(c=>{if(t>=c.timestamp[0]&&t<=c.timestamp[1])texto=c.text});
+
+if(texto){
+let tamanoFuente = esVertical? 32 : 48; // Más pequeño en vertical
+let posicionY = esVertical? s.height - 60 : s.height - 80; // Más arriba en vertical
+
+ctxs.font=`bold ${tamanoFuente}px Impact`;
+ctxs.textAlign='center';
+ctxs.fillStyle='#FFD700';
+ctxs.strokeStyle='#000';
+ctxs.lineWidth=6;
+ctxs.strokeText(texto,s.width/2,posicionY);
+ctxs.fillText(texto,s.width/2,posicionY);
+}
+}
+requestAnimationFrame(dibujar);
+}
+dibujar();
 }
 </script>
 </body>
