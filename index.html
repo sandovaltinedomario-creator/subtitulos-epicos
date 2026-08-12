@@ -3,178 +3,82 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EPIC SUBS v2.0 PRO</title>
-<script src="https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2"></script>
+<title>EPIC SUBS v2.1</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#000;color:#fff;font-family:'Arial Black';padding:10px}
-h1{color:#FFD700;text-shadow:0 0 20px #FFD700;text-align:center;font-size:20px;margin-bottom:10px}
-.panel{background:#111;border:2px solid #FFD700;border-radius:12px;padding:12px;margin:10px auto;max-width:650px}
-.btn{background:#FF4500;color:#fff;border:none;padding:12px 15px;font-size:14px;border-radius:8px;margin:4px;font-weight:bold;cursor:pointer}
-.btn.verde{background:#00FF00;color:#000}
-.btn.azul{background:#0099FF}
-.btn.rojo{background:#FF0000}
-.btn:disabled{opacity:0.3}
-.grid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:8px 0}
-select,input[type="color"],input[type="range"]{padding:8px;background:#222;color:#FFD700;border:1px solid #FFD700;border-radius:8px}
-label{color:#FFD700;font-size:11px}
-.container{position:relative;display:flex;justify-content:center;margin-top:10px}
-#videoPlayer{max-width:100%;border:3px solid #FFD700;border-radius:10px}
+body{
+background: radial-gradient(circle at center, #1a0000 0%, #000 100%);
+color:#fff;font-family:'Bebas Neue', sans-serif;
+min-height:100vh;padding:8px;
+}
+
+/* HEADER ÉPICO */
+.header{text-align:center;padding:12px 0;margin-bottom:10px}
+.header h1{
+font-size:28px;letter-spacing:3px;
+background: linear-gradient(90deg, #FFD700, #FF4500, #FFD700);
+-webkit-background-clip: text;-webkit-text-fill-color: transparent;
+animation: glow 2s infinite;
+text-shadow:0 0 30px #FFD700;
+}
+@keyframes glow{0%,100%{filter:brightness(1)}50%{filter:brightness(1.5)}}
+
+/* PANEL DE CONTROL */
+.panel{
+background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
+border:2px solid #FFD700;border-radius:15px;
+padding:15px;margin:0 auto 15px;max-width:700px;
+box-shadow: 0 0 30px rgba(255,215,0,0.3);
+}
+.paso{color:#FFD700;font-size:16px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.paso span{background:#FF4500;color:#000;padding:2px 8px;border-radius:50%;font-weight:bold}
+
+/* BOTONES ÉPICOS */
+.btn{
+background: linear-gradient(180deg, #FF4500, #CC3300);
+color:#fff;border:none;padding:14px 20px;font-size:15px;
+border-radius:10px;margin:5px;font-weight:bold;
+font-family:'Bebas Neue';letter-spacing:1px;
+cursor:pointer;transition: all 0.2s;
+box-shadow: 0 4px 0 #992200, 0 0 15px rgba(255,69,0,0.5);
+}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #992200}
+.btn.verde{background: linear-gradient(180deg, #00FF00, #00CC00);box-shadow: 0 4px 0 #009900, 0 0 15px rgba(0,255,0,0.5)}
+.btn.azul{background: linear-gradient(180deg, #0099FF, #0066CC);box-shadow: 0 4px 0 #004499, 0 0 15px rgba(0,153,255,0.5)}
+.btn.gris{background: linear-gradient(180deg, #555, #333);box-shadow: 0 4px 0 #222}
+
+.grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:10px 0}
+input[type="file"]{color:#FFD700;width:100%;margin-bottom:10px}
+
+/* CAJA DE TEXTO */
+textarea{
+width:100%;height:90px;background:#000;color:#FFD700;
+border:2px solid #FFD700;border-radius:10px;padding:10px;
+font-size:16px;font-family:Arial;resize:none;
+box-shadow:inset 0 0 10px rgba(255,215,0,0.2);
+}
+textarea:focus{outline:none;box-shadow:inset 0 0 15px rgba(255,215,0,0.5)}
+
+/* CONTROLES */
+.control-box{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.control-group{background:#111;padding:10px;border-radius:8px;border:1px solid #333}
+.control-group label{display:block;color:#FFD700;font-size:12px;margin-bottom:5px;letter-spacing:1px}
+select,input[type="color"],input[type="range"]{width:100%;padding:8px;background:#000;color:#FFD700;border:1px solid #FFD700;border-radius:6px}
+
+/* VIDEO */
+.container{position:relative;display:flex;justify-content:center}
+#videoPlayer{max-width:100%;border:4px solid #FFD700;border-radius:12px;box-shadow:0 0 40px rgba(255,215,0,0.4)}
 #subsCanvas{position:absolute;top:0;left:0;pointer-events:none}
-.estado{color:#00FF00;text-align:center;margin:8px;font-weight:bold;font-size:13px}
-.info{color:#aaa;font-size:11px;text-align:center;margin-top:5px}
+.estado{text-align:center;color:#00FF00;font-size:14px;margin-top:8px;font-weight:bold}
+
+/* TUTORIAL RÁPIDO */
+.tutorial{background:#0a0a0a;border-left:4px solid #FFD700;padding:10px;margin-top:10px;border-radius:5px;font-size:12px;font-family:Arial}
+.tutorial b{color:#FFD700}
 </style>
 </head>
 <body>
-<h1>⚔️ EPIC SUBS v2.0 PRO ⚔️</h1>
 
-<div class="panel">
-<div class="grid">
-<input type="file" id="videoInput" accept="video/*">
-<button class="verde" id="btnIA">1.TRANSCRIBIR IA</button>
-<button id="btnPlay">PLAY/PAUSE</button>
-<button class="azul" id="btnGrabar">2.GRABAR VIDEO</button>
-<button class="rojo" id="btnDetener" style="display:none">DETENER</button>
-</div>
-
-<div class="grid">
-<label>ESTILO:</label>
-<select id="estilo">
-<option value="dorado">ÉPICO DORADO</option>
-<option value="dark">DARK CINEMATIC</option>
-<option value="glitch">GLITCH CYBER</option>
-<option value="fuego">FUEGO</option>
-<option value="samurai">SAMURAI</option>
-</select>
-<label>COLOR:</label><input type="color" id="color" value="#FFD700">
-<label>TAMAÑO:</label><input type="range" id="tamano" min="20" max="80" value="45">
-<label>POS:</label>
-<select id="posicion">
-<option value="abajo">ABAJO</option>
-<option value="arriba">ARRIBA</option>
-<option value="centro">CENTRO</option>
-</select>
-</div>
-<div class="estado" id="estado">Estado: Sube un video</div>
-<div class="info">Tip: Después de GRABAR, el video se guarda en tu Galería</div>
-</div>
-
-<div class="container">
-<video id="videoPlayer" controls></video>
-<canvas id="subsCanvas"></canvas>
-</div>
-
-<script>
-const { pipeline } = transformers;
-let transcriber, palabras = [];
-let estilo='dorado', color='#FFD700', tamano=45, posicion='abajo';
-let esVertical=false, grabando=false, streamGrabacion, recorder;
-
-document.getElementById('estilo').onchange=e=>estilo=e.target.value;
-document.getElementById('color').onchange=e=>color=e.target.value;
-document.getElementById('tamano').oninput=e=>tamano=e.target.value;
-document.getElementById('posicion').onchange=e=>posicion=e.target.value;
-
-async function cargarIA(){
-document.getElementById('estado').innerText="Cargando IA Whisper...";
-transcriber = await pipeline('automatic-speech-recognition','Xenova/whisper-tiny',{return_timestamps:true});
-document.getElementById('estado').innerText="IA Lista ✅ Sube un video";
-}
-cargarIA();
-
-document.getElementById('videoInput').onchange=e=>{
-const file=e.target.files[0];
-if(!file)return;
-document.getElementById('videoPlayer').src=URL.createObjectURL(file);
-document.getElementById('estado').innerText="Video cargado. Dale a TRANSCRIBIR IA";
-};
-
-document.getElementById('btnIA').onclick=async()=>{
-const v=document.getElementById('videoPlayer');
-if(!v.src){alert("Sube un video primero");return;}
-document.getElementById('estado').innerText="Transcribiendo... espera 40 seg";
-document.getElementById('btnIA').disabled=true;
-const resultado = await transcriber(v.src);
-palabras = resultado.chunks;
-document.getElementById('estado').innerText=`Listo! ${palabras.length} palabras. Dale PLAY`;
-document.getElementById('btnIA').disabled=false;
-animar();
-};
-
-document.getElementById('btnPlay').onclick=()=>{
-const v=document.getElementById('videoPlayer');
-v.paused?v.play():v.pause();
-};
-
-// GRABACIÓN DIRECTA A GALERÍA
-document.getElementById('btnGrabar').onclick=async()=>{
-const canvas=document.getElementById('subsCanvas');
-const video=document.getElementById('videoPlayer');
-streamGrabacion=canvas.captureStream(30);
-let audioCtx=new AudioContext();
-let dest=audioCtx.createMediaStreamDestination();
-let source=audioCtx.createMediaElementSource(video);
-source.connect(dest);
-source.connect(audioCtx.destination);
-let tracks=[...streamGrabacion.getVideoTracks(),...dest.stream.getAudioTracks()];
-let streamFinal=new MediaStream(tracks);
-
-recorder=new MediaRecorder(streamFinal,{mimeType:'video/webm;codecs=vp9'});
-let chunks=[];
-recorder.ondataavailable=e=>chunks.push(e.data);
-recorder.onstop=()=>{
-let blob=new Blob(chunks,{type:'video/webm'});
-let url=URL.createObjectURL(blob);
-let a=document.createElement('a');
-a.href=url;a.download=`EPIC_SUBS_${Date.now()}.webm`;a.click();
-alert("Video guardado! Búscalo en Descargas y muévelo a Galería");
-};
-recorder.start();
-video.play();
-grabando=true;
-document.getElementById('btnGrabar').style.display='none';
-document.getElementById('btnDetener').style.display='inline';
-document.getElementById('estado').innerText="GRABANDO... Dale DETENER cuando termines";
-};
-
-document.getElementById('btnDetener').onclick=()=>{
-recorder.stop();
-document.getElementById('videoPlayer').pause();
-grabando=false;
-document.getElementById('btnGrabar').style.display='inline';
-document.getElementById('btnDetener').style.display='none';
-document.getElementById('estado').innerText="Video guardado ✅";
-};
-
-const v=document.getElementById('videoPlayer');
-const s=document.getElementById('subsCanvas');
-const ctx=s.getContext('2d');
-
-v.onloadedmetadata=()=>{s.width=v.videoWidth;s.height=v.videoHeight;esVertical=v.videoHeight>v.videoWidth};
-
-function animar(){
-function loop(){
-ctx.clearRect(0,0,s.width,s.height);
-const t=v.currentTime;
-let palabra=palabras.find(p=>t>=p.timestamp[0]&&t<=p.timestamp[1]);
-if(palabra){
-let texto=palabra.text.toUpperCase();
-let tam=esVertical?tamano*0.7:tamano;
-let y=posicion=='abajo'?s.height-90:posicion=='arriba'?90:s.height/2;
-ctx.font=`bold ${tam}px Impact`;ctx.textAlign='center';ctx.fillStyle=color;
-
-if(estilo=='dorado'){ctx.strokeStyle='#000';ctx.lineWidth=6;ctx.shadowColor='#FFD700';ctx.shadowBlur=20;}
-if(estilo=='dark'){ctx.strokeStyle='#FF0000';ctx.lineWidth=5;}
-if(estilo=='glitch'){ctx.strokeStyle='#FF00FF';ctx.lineWidth=3;ctx.shadowColor='#00FFFF';ctx.shadowBlur=15;}
-if(estilo=='fuego'){ctx.strokeStyle='#FF4500';ctx.lineWidth=6;ctx.shadowColor='#FF0000';ctx.shadowBlur=25;}
-if(estilo=='samurai'){ctx.strokeStyle='#C0C0C0';ctx.lineWidth=7;}
-
-ctx.strokeText(texto,s.width/2,y);ctx.fillText(texto,s.width/2,y);
-}
-requestAnimationFrame(loop);
-}
-loop();
-}
-</script>
-</body>
-</html>
+<div class="header">
+<h1>⚔
